@@ -1,10 +1,9 @@
 package com.example.securityboot.Service;
 
-import com.example.securityboot.models.Role;
-import com.example.securityboot.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.example.securityboot.models.Role;
+import com.example.securityboot.repository.RoleRepository;
 
 import javax.transaction.Transactional;
 import java.util.HashSet;
@@ -38,6 +37,5 @@ public class RoleServiceImpl implements RoleService {
     public HashSet<Role> getSetOfRoles(String[] roleNames) {
         return roleRepository.getSetOfRoles(roleNames);
     }
-
 
 }

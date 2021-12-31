@@ -1,7 +1,7 @@
 package com.example.securityboot.repository;
 
 
-import org.springframework.security.core.userdetails.User;
+import com.example.securityboot.models.User;
 import org.springframework.stereotype.Repository;
 
 

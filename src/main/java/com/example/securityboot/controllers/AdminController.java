@@ -3,13 +3,15 @@ package com.example.securityboot.controllers;
 import com.example.securityboot.Service.RoleService;
 import com.example.securityboot.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.context.annotation.ComponentScan;
+import com.example.securityboot.models.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
 @Controller
+@ComponentScan("models")
 @RequestMapping("/admin")
 public class AdminController {
 

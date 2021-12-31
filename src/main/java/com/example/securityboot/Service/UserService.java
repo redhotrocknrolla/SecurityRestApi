@@ -1,6 +1,7 @@
 package com.example.securityboot.Service;
 
-import org.springframework.security.core.userdetails.User;
+import com.example.securityboot.models.User;
+
 import java.util.List;
 
 public interface UserService {
