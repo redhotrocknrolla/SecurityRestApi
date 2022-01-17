@@ -5,20 +5,23 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "t_role")
 public class Role implements GrantedAuthority {
     @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "role")
-    private String role;
+    private String roleName;
 
     @ManyToMany(mappedBy = "roles")
-    private Set<User> userSet;
+    private Set <User> users;
 
-    public Role() {
+    public Role() {}
+
+    public Role(String roleName) {
+        if (roleName.contains("ADMIN")) {
+            this.id = 1L;
+        } else if (roleName.contains("USER")) {
+            this.id = 2L;
+        }
+        this.roleName = roleName;
     }
 
     public Long getId() {
@@ -29,16 +32,21 @@ public class Role implements GrantedAuthority {
         this.id = id;
     }
 
-    public String getRole() {
-        return role;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRoleName(String role) {
+        this.roleName = role;
     }
 
     @Override
     public String getAuthority() {
-        return getRole();
+        return roleName;
+    }
+
+    @Override
+    public String toString() {
+        return roleName;
     }
 }

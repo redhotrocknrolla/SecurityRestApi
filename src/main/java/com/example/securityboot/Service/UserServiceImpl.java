@@ -3,53 +3,68 @@ package com.example.securityboot.Service;
 
 import com.example.securityboot.models.User;
 import com.example.securityboot.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
-
-import javax.transaction.Transactional;
-import java.util.List;
+import java.util.Optional;
 
 @Service
-@Transactional
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
 
-    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private BCryptPasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository) {
-        this.passwordEncoder = passwordEncoder;
+    public UserServiceImpl (UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-    }
-    @Override
-    public List<User> getAllUser() {
-        return userRepository.getAllUser();
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public User getUserById(long id) {
-        return userRepository.getUserById(id);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findByEmail(email);
     }
 
     @Override
     public void createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.createUser(user);
+        if ((userRepository.findByName(user.getName()) == null) || (userRepository.findByEmail(user.getEmail()) == null)) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
 
+        }
     }
 
     @Override
-    public void updateUser(long id, User updatedUser) {
-        if (updatedUser.getPassword() != "")
-            updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-        userRepository.updateUser(id, updatedUser);
+    public Iterable<User> getAllUsers() {
+        return userRepository.findAll();
     }
+
     @Override
-    public void deleteUser(long id) {
-        userRepository.deleteUser(id);
+    public void updateUser(User user) {
+        if ((userRepository.findByName(user.getName()) == null) || (userRepository.findByEmail(user.getEmail()) == null)
+        || userRepository.findByLastName(user.getLastName()) == null)
+            userRepository.findByAge(user.getAge()); {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+
+        }
+    }
+
+    @Override
+    public void deleteUser(User user) {
+        userRepository.delete(user);
+    }
+
+    @Override
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
     }
 }

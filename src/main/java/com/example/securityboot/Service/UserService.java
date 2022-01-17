@@ -2,12 +2,13 @@ package com.example.securityboot.Service;
 
 import com.example.securityboot.models.User;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
-    List<User> getAllUser();
-    User getUserById(long id);
     void createUser(User user);
-    void updateUser(long id, User updatedUser);
-    void deleteUser(long id);
+    Iterable<User> getAllUsers();
+    void updateUser(User user);
+    void deleteUser(User user);
+    Optional<User> getUserById(Long id);
+    void deleteUserById (Long id);
 }

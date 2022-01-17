@@ -2,13 +2,15 @@ package com.example.securityboot.Service;
 
 import com.example.securityboot.models.Role;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+
 
 public interface RoleService {
-    List<Role> getAllRoles();
-    Role getRoleByName(String name);
-    HashSet<Role> getSetOfRoles(String[] roleNames);
+    void createRoles(Set<Role> roles);
+    Set<Role> getAllRoles();
+    Optional<Role> findById(Long id);
 
 
 }

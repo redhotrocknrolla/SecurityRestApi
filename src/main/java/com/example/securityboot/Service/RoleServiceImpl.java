@@ -1,41 +1,38 @@
 package com.example.securityboot.Service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.securityboot.models.Role;
 import com.example.securityboot.repository.RoleRepository;
-
-import javax.transaction.Transactional;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 
 @Service
-@Transactional
 public class RoleServiceImpl implements RoleService {
 
+    private final RoleRepository roleRepository;
 
-    private RoleRepository roleRepository;
-
-    @Autowired
-    public RoleServiceImpl(RoleRepository roleRepository) {
+    public RoleServiceImpl (RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 
-
     @Override
-    public List<Role> getAllRoles() {
-        return roleRepository.getAllRoles();
+    public void createRoles(Set<Role> roles) {
+        roleRepository.saveAll(roles);
     }
 
     @Override
-    public Role getRoleByName(String name) {
-        return roleRepository.getRoleByName(name);
+    public Set<Role> getAllRoles() {
+        Iterable<Role>  iterable = roleRepository.findAll();
+        Set<Role> set = new HashSet<>();
+        iterable.forEach(set::add);
+        return set;
     }
 
     @Override
-    public HashSet<Role> getSetOfRoles(String[] roleNames) {
-        return roleRepository.getSetOfRoles(roleNames);
+    public Optional<Role> findById(Long id) {
+        return roleRepository.findById(id);
     }
 
 }

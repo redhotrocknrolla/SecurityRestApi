@@ -8,36 +8,27 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "t_user")
 public class User implements UserDetails {
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "password")
+    private String lastName;
+    private Integer age = 0;
+    private String email;
     private String password;
 
-    @Column(name = "lastName")
-    private String lastName;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set <Role> roles;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    public User() {}
 
-
-    public User() {
-    }
-
-    public User(Long id, String name, String password, String lastName, Set<Role> roles) {
-        this.id = id;
+    public User(String name, String lastName, int age, String email, String password, Set<Role> roles) {
         this.name = name;
-        this.password = password;
         this.lastName = lastName;
+        this.age = age;
+        this.email = email;
+        this.password = password;
         this.roles = roles;
     }
 
@@ -57,10 +48,6 @@ public class User implements UserDetails {
         this.name = name;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getLastName() {
         return lastName;
     }
@@ -69,27 +56,51 @@ public class User implements UserDetails {
         this.lastName = lastName;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public int getAge() {
+        return age;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
+    public String getEmail() {
+        return email;
     }
 
-    @Override
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getPassword() {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(String roles) {
+        this.roles = new HashSet<>();
+        if (roles.contains("ROLE_ADMIN")) {
+            this.roles.add(new Role("ROLE_ADMIN"));
+        }
+        if (roles.contains("ROLE_USER")) {
+            this.roles.add(new Role("ROLE_USER"));
+        }
+    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+
     @Override
     public String getUsername() {
-        return getName();
+        return name;
     }
 
     @Override
@@ -111,8 +122,7 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
-
 }
+
 
 

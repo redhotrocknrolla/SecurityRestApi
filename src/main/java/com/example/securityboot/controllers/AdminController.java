@@ -2,71 +2,53 @@ package com.example.securityboot.controllers;
 
 import com.example.securityboot.Service.RoleService;
 import com.example.securityboot.Service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import com.example.securityboot.models.User;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
 @Controller
-@ComponentScan("models")
-@RequestMapping("/admin")
 public class AdminController {
 
     private final UserService userService;
     private final RoleService roleService;
 
-    @Autowired
-    public AdminController(UserService userService, RoleService roleService) {
+    public AdminController (UserService userService,
+                            RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
     }
-    @GetMapping()
-    public String getUsers(Model model) {
-        model.addAttribute("users", userService.getAllUser());
-        return "index";
+
+    @GetMapping("/admin")
+    public String getAdminPage(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        model.addAttribute("authorizedUser", userDetails);
+        model.addAttribute("newUser", new User());
+        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("allRoles", roleService.getAllRoles());
+        return "admin";
     }
 
-    @GetMapping("/new")
-    public String newUser(Model model) {
-        model.addAttribute("roles", roleService.getAllRoles());
-        model.addAttribute("user", new User());
-        return "new";
+    @PostMapping()
+    public String createUser(@ModelAttribute User newUser) {
+        userService.createUser(newUser);
+        return "redirect:/admin";
     }
+
     @PatchMapping("/{id}")
-    public String updateUser(@ModelAttribute("user") User user,
-                             @RequestParam(value = "nameRoles") String [] nameRoles,
-                             @PathVariable(value = "id") long id) {
-        user.setRoles(roleService.getSetOfRoles(nameRoles));
-        userService.updateUser(id, user);
+    public String updateUser(@ModelAttribute User editUser) {
+        userService.updateUser(editUser);
         return "redirect:/admin";
     }
 
-    @PostMapping
-    public String createUser(@ModelAttribute("user") User user,
-                             @RequestParam(value = "nameRoles") String [] nameRoles) {
-        user.setRoles(roleService.getSetOfRoles(nameRoles));
-        userService.createUser(user);
-        return "redirect:/admin";
-    }
-
-    @GetMapping("/{id}")
-    public String editUser(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("roles",roleService.getAllRoles());
-        model.addAttribute("user", userService.getUserById(id));
-        return "edit";
-    }
-
-    @GetMapping(value = "user/{id}")
-    public String getUserById(@PathVariable Long id, Model model) {
-        model.addAttribute("user", userService.getUserById(id));
-        return "user";
-    }
     @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable("id") Long id) {
-        userService.deleteUser(id);
+    public String deleteUser(@PathVariable("id") long id) {
+        User user = userService.getUserById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        userService.deleteUser(user);
         return "redirect:/admin";
     }
 

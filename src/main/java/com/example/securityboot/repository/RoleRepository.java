@@ -1,13 +1,12 @@
 package com.example.securityboot.repository;
 
 import com.example.securityboot.models.Role;
-import java.util.HashSet;
-import java.util.List;
+import org.springframework.data.repository.CrudRepository;
 
-public interface RoleRepository {
+import java.util.Optional;
 
-    List <Role> getAllRoles();
-    Role getRoleByName(String name);
-    HashSet<Role> getSetOfRoles(String[] roleNames);
 
+public interface RoleRepository extends CrudRepository<Role, Long> {
+    @Override
+    Optional<Role> findById(Long id);
 }
